@@ -85,4 +85,14 @@ Components.unknown.editForm = UnknownForm;
 Components.url.editForm = UrlForm;
 Components.well.editForm = WellForm;
 
+// Custom
+import NWFileForm from './nwfile/TextField.form';
+Components.nwfile.editForm = NWFileForm;
+import NWDirForm from './nwdir/File.form';
+Components.nwdir.editForm = NWDirForm;
+import NWFileSimple from './nwfilesimple/NWFile.form';
+Components.nwfilesimple.editForm = NWFileSimple;
+import RangeComponent from './range/Number.form';
+Components.range.editForm = RangeComponent;
+
 export default Components;

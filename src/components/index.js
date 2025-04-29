@@ -47,6 +47,11 @@ import UnknownComponent from './unknown/Unknown';
 import UrlComponent from './url/Url';
 import WellComponent from './well/Well';
 
+import NWFileComponent from './nwfile/TextField';
+import NWDirComponent from './nwdir/File';
+import NWFileSimpleComponent from './nwfilesimple/NWFile';
+import RangeComponent from './range/Number';
+
 export default {
   address: AddressComponent,
   base: Component,
@@ -97,4 +102,9 @@ export default {
   unknown: UnknownComponent,
   url: UrlComponent,
   well: WellComponent,
+
+  nwfile:NWFileComponent,
+  nwdir:NWDirComponent,
+  nwfilesimple:NWFileSimpleComponent,
+  range:RangeComponent,
 };
