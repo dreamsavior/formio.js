@@ -117,8 +117,7 @@ export default class RangeComponent extends Input {
 
   /**
    * Creates the number mask for normal numbers.
-   *
-   * @return {*}
+   * @returns {*}
    */
   createNumberMask() {
     return createNumberMask({

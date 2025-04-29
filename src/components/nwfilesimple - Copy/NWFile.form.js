@@ -4,6 +4,10 @@ import NWFileEditDisplay from './editForm/NWFile.edit.display';
 import NWFileEditData from './editForm/NWFile.edit.data';
 import NWFileEditValidation from './editForm/NWFile.edit.validation';
 
+/**
+ *
+ * @param {...any} extend
+ */
 export default function(...extend) {
   return textEditForm([
     {

@@ -32,13 +32,31 @@ export default [
     ignore: true
   },
   {
+    key: 'hideLabel',
+    ignore: true
+  },
+  {
+    weight: 0,
+    type: 'textfield',
+    input: true,
+    key: 'label',
+    label: 'Label',
+    placeholder: 'Field Label',
+    tooltip: 'The label for this field.',
+    validate: {
+      required: true
+    },
+    autofocus: true,
+    overrideEditForm: true
+  },
+  {
     weight: 150,
     type: 'datagrid',
     input: true,
     key: 'columns',
     label: 'Column Properties',
     addAnother: 'Add Column',
-    tooltip: 'The width, offset, push, and pull settings for each column.',
+    tooltip: 'The size and width settings for each column. One row is equal to 12. (e.g., a row with two columns spanning the entire page should be 6 and 6)',
     reorder: true,
     components: [
       {
@@ -66,24 +84,6 @@ export default [
         key: 'width',
         defaultValue: 6,
         label: 'Width'
-      },
-      {
-        type: 'number',
-        key: 'offset',
-        defaultValue: 0,
-        label: 'Offset'
-      },
-      {
-        type: 'number',
-        key: 'push',
-        defaultValue: 0,
-        label: 'Push'
-      },
-      {
-        type: 'number',
-        key: 'pull',
-        defaultValue: 0,
-        label: 'Pull'
       }
     ]
   },
@@ -94,5 +94,9 @@ export default [
     tooltip: 'Will automatically adjust columns based on if nested components are hidden.',
     key: 'autoAdjust',
     input: true
-  }
+  },
+  {
+    key: 'hideLabel',
+    ignore: true
+  },
 ];

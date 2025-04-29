@@ -74,7 +74,7 @@ export default class ColumnsComponent extends NestedComponent {
       if (!column.size) {
         column.size = 'md';
       }
-      column.currentWidth = column.width || 0;
+      column.currentWidth = this.options.condensedMode ? this.gridSize : column.width || 0;
       // Ensure there is a components array.
       if (!Array.isArray(column.components)) {
         column.components = [];
@@ -134,7 +134,7 @@ export default class ColumnsComponent extends NestedComponent {
 
   /**
    * Group columns in rows.
-   * @return {Array.<ColumnComponent[]>}
+   * @returns {Array.<ColumnComponent[]>} - The array of columns 
    */
   groupByRow() {
     const initVal = { stack: [], rows: [] };
@@ -156,7 +156,7 @@ export default class ColumnsComponent extends NestedComponent {
   }
 
   checkData(data, flags, row, components) {
-    const isValid = super.checkData(data, flags, row, components);
+    super.checkData(data, flags, row, components);
 
     if (this.component.autoAdjust && this.options.display !== 'pdf') {
       const redraw = this.justify();
@@ -165,8 +165,6 @@ export default class ColumnsComponent extends NestedComponent {
         this.redraw();
       }
     }
-
-    return isValid;
   }
 
   detach(all) {

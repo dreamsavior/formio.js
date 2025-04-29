@@ -4,6 +4,14 @@ export default [
     ignore: true
   },
   {
+    key: 'labelWidth',
+    ignore: true
+  },
+  {
+    key: 'labelMargin',
+    ignore: true
+  },
+  {
     key: 'placeholder',
     ignore: true
   },
@@ -26,5 +34,23 @@ export default [
   {
     key: 'tableView',
     ignore: true
+  },
+  {
+    key: 'hideLabel',
+    ignore: true
+  },
+  {
+    weight: 0,
+    type: 'textfield',
+    input: true,
+    key: 'label',
+    label: 'Label',
+    placeholder: 'Field Label',
+    tooltip: 'The label for this field.',
+    validate: {
+      required: true
+    },
+    autofocus: true,
+    overrideEditForm: true
   },
 ];

@@ -1,6 +1,8 @@
 import Input from '../_classes/input/Input';
 import { conformToMask } from '@formio/vanilla-text-mask';
+import Inputmask from 'inputmask';
 import * as FormioUtils from '../../utils/utils';
+import _ from 'lodash';
 
 export default class TextFieldComponent extends Input {
   static schema(...extend) {
@@ -43,6 +45,12 @@ export default class TextFieldComponent extends Input {
     return {
       ...super.conditionOperatorsSettings,
       operators: [...super.conditionOperatorsSettings.operators, 'includes', 'notIncludes', 'endsWith', 'startsWith'],
+      valueComponent(classComp) {
+        return {
+          ...classComp,
+          type: 'textfield',
+        };
+      }
     };
   }
 
@@ -91,6 +99,9 @@ export default class TextFieldComponent extends Input {
         locale: this.component.widget.locale || this.options.language,
         saveAs: 'text'
       };
+      // update originalComponent to include widget settings after component initialization
+      // originalComponent is used to restore the component (and widget) after evaluating field logic
+      this.originalComponent = FormioUtils.fastCloneDeep(this.component);
     }
   }
 
@@ -102,11 +113,10 @@ export default class TextFieldComponent extends Input {
   }
 
   /**
-   * Returns the mask value object.
-   *
-   * @param value
-   * @param flags
-   * @return {*}
+   * Returns the mask value object (mutates value!).
+   * @param {any} [value] - The value to convert to a mask value.
+   * @param {any} [flags] - The flags to use when converting to a mask value.
+   * @returns {*} - The value as a mask value.
    */
   maskValue(value, flags = {}) {
     // Convert it into the correct format.
@@ -128,10 +138,9 @@ export default class TextFieldComponent extends Input {
 
   /**
    * Normalize the value set in the data object.
-   *
-   * @param value
-   * @param flags
-   * @return {*}
+   * @param {any} value - The value to normalize.
+   * @param {any} flags - The flags to use when normalizing the value.
+   * @returns {*} - Returns the normalized value.
    */
   normalizeValue(value, flags = {}) {
     if (!this.isMultipleMasksField) {
@@ -145,10 +154,10 @@ export default class TextFieldComponent extends Input {
 
   /**
    * Sets the value at this index.
-   *
-   * @param index
-   * @param value
-   * @param flags
+   * @param {number} index - The index to set the value at.
+   * @param {any} value - The value to set.
+   * @param {any} [flags] - The flags to use when setting the value.
+   * @returns {void}
    */
   setValueAt(index, value, flags = {}) {
     if (!this.isMultipleMasksField) {
@@ -160,9 +169,17 @@ export default class TextFieldComponent extends Input {
     const maskInput = this.refs.select ? this.refs.select[index]: null;
     const mask = this.getMaskPattern(value.maskName);
     if (textInput && maskInput && mask) {
-      const placeholderChar = this.placeholderChar;
-      textInput.value = conformToMask(textValue, FormioUtils.getInputMask(mask), { placeholderChar }).conformedValue;
+      // We need to set the maskInput (select dropdown) value before calling inputmask.setValue because, this
+      // function will trigger a "change" event, which was calling updateValue setting the mask type to an incorrect value.
       maskInput.value = value.maskName;
+      if (textInput.inputmask) {
+        this.setInputMask(textInput, mask);
+        textInput.inputmask.setValue(textValue);
+      }
+      else {
+        const placeholderChar = this.placeholderChar;
+        textInput.value = conformToMask(textValue, FormioUtils.getInputMask(mask), { placeholderChar }).conformedValue;
+      }
     }
     else {
       return super.setValueAt(index, textValue, flags);
@@ -177,9 +194,8 @@ export default class TextFieldComponent extends Input {
 
   /**
    * Returns the value at this index.
-   *
-   * @param index
-   * @return {*}
+   * @param {number} index - The index to get the value from.
+   * @returns {*} - The value at the index.
    */
   getValueAt(index) {
     if (!this.isMultipleMasksField) {
@@ -198,7 +214,11 @@ export default class TextFieldComponent extends Input {
         return this.unmaskValue(value, displayMask);
       }
 
-      if (this.refs.valueMaskInput?.mask) {
+      if (displayMask && displayMask !== valueMask) {
+        return Inputmask.format(Inputmask.unmask(value, displayMask), valueMask);
+      }
+
+      if (this.refs.valueMaskInput?.mask && this.refs.valueMaskInput.mask.textMaskInputElement) {
         this.refs.valueMaskInput.mask.textMaskInputElement.update(value);
         return this.refs.valueMaskInput?.value;
       }
@@ -212,12 +232,58 @@ export default class TextFieldComponent extends Input {
       maskName: maskInput ? maskInput.value : undefined
     };
   }
-
-  getValueAsString(value, options) {
-    if (value && this.component.inputFormat === 'plain' && /<[^<>]+>/g.test(value)) {
-      value = value.replaceAll('<','&lt;').replaceAll('>', '&gt;');
+  checkInputMaskValue(inputMask) {
+    let valid = true;
+    const maskValues = _.values(inputMask.split('').reduce((acc, el, i, mask) => {
+      if (el === '{' || el === '}') {
+        if (mask[i+1] === '{' || mask[i+1] === '}') {
+          valid = false;
+        }
+        acc[el] = (acc[el] ?? 0) + 1;
+      }
+      return acc;
+    },{}));
+    if (maskValues[0] !== maskValues[1]) {
+      valid = false;
     }
-    return super.getValueAsString(value, options);
+    return valid;
+  }
+
+   setInputMask(input, inputMask, usePlaceholder) {
+    if (this.type !== 'textfield') {
+      super.setInputMask(input, inputMask, usePlaceholder);
+      return;
+    }
+
+    inputMask = inputMask || this.component.displayMask || this.component.inputMask;
+    const mask = FormioUtils.getInputMask(inputMask, this.placeholderChar);
+    this.defaultMask = mask;
+
+    if (input && inputMask) {
+      try {
+        //remove previous mask
+        if (input.mask) {
+          input.mask.remove();
+        }
+        if (this.checkInputMaskValue(inputMask)) {
+          input.mask = new Inputmask(inputMask, {
+            clearMaskOnLostFocus: !!this.component.placeholder,
+            showMaskOnHover: !this.component.placeholder,
+            placeholder: this.placeholderChar || '',
+          }).mask(input);
+        }
+      }
+      catch (e) {
+        console.warn(e);
+      }
+      if (mask.numeric) {
+        input.setAttribute('pattern', '\\d*');
+      }
+
+      if (this.component.placeholder) {
+        input.setAttribute('placeholder', this.component.placeholder);
+      }
+    }
   }
 
   isHtmlRenderMode() {
@@ -258,5 +324,27 @@ export default class TextFieldComponent extends Input {
     value = this.truncateMultipleSpaces(value);
     this.dataValue = value;
     return Promise.resolve(value).then(() => super.beforeSubmit());
+  }
+
+  getValueAsString(value, options) {
+    if (options?.email && this.visible && !this.skipInEmail && _.isObject(value)) {
+      const result = (`
+        <table border="1" style="width:100%">
+          <tbody>
+          <tr>
+            <th style="padding: 5px 10px;">${value.maskName}</th>
+            <td style="width:100%;padding:5px 10px;">${value.value}</td>
+          </tr>
+          </tbody>
+        </table>
+      `);
+
+      return result;
+    }
+
+    if (value && this.component.inputFormat === 'plain' && /<[^<>]+>/g.test(value)) {
+      value = value.replaceAll('<','&lt;').replaceAll('>', '&gt;');
+    }
+    return super.getValueAsString(value, options);
   }
 }

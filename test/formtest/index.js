@@ -10,6 +10,7 @@ const manualOverride = require('./manualOverride.json');
 const uniqueApiKeys = require('./uniqueApiKeys.json');
 const uniqueApiKeysLayout = require('./uniqueApiKeysLayout.json');
 const uniqueApiKeysSameLevel = require('./uniqueApiKeysSameLevel.json');
+const uniqueApiKeysTranslation = require('./uniqueApiKeysTranslation.json');
 const validationOnBlur = require('./validationOnBlur.json');
 const calculateValueWithManualOverride = require('./calculateValueWithManualOverride.json');
 const calculateValueWithSubmissionMetadata = require('./calculateValueWithSubmissionMetadata.json');
@@ -41,6 +42,7 @@ const wizardWithSimpleConditionalPage = require('./wizardWithSimpleConditionalPa
 const wizardWithTooltip = require('./wizardWithTooltip.json');
 const resourceKeyCamelCase = require('./resourceKeyCamelCase.json');
 const tooltipActivateCheckbox = require('./tooltipActivateCheckbox.json');
+const formWithObjectValueSelect = require('./formWithObjectValueSelect.json');
 
 module.exports = {
   advanced,
@@ -55,6 +57,7 @@ module.exports = {
   uniqueApiKeys,
   uniqueApiKeysLayout,
   uniqueApiKeysSameLevel,
+  uniqueApiKeysTranslation,
   validationOnBlur,
   calculateValueWithManualOverride,
   calculateValueWithSubmissionMetadata,
@@ -86,4 +89,5 @@ module.exports = {
   wizardWithTooltip,
   resourceKeyCamelCase,
   tooltipActivateCheckbox,
+  formWithObjectValueSelect
 };

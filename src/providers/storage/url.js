@@ -1,4 +1,29 @@
-const url = (formio) => {
+/**
+ *
+ * @param {object} formio - formio instance
+ * @returns {import('./typedefs').FileProvider} The FileProvider interface defined in index.js.
+ */
+function url(formio) {
+  /**
+   *
+   * @param {object} options - options to set on the xhr
+   * @param {object} xhr - the xhr object
+   */
+  function setOptions(options, xhr) {
+    const parsedOptions = typeof options === 'string' ? JSON.parse(options) : options;
+    for (const prop in parsedOptions) {
+      if (prop === 'headers') {
+        const headers = parsedOptions['headers'];
+        for (const header in headers) {
+          xhr.setRequestHeader(header, headers[header]);
+        }
+      }
+      else {
+        xhr[prop] = parsedOptions[prop];
+      }
+    }
+  }
+
   const xhrRequest = (url, name, query, data, options, progressCallback, abortCallback) => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -67,18 +92,7 @@ const url = (formio) => {
 
       //Overrides previous request props
       if (options) {
-        const parsedOptions = typeof options === 'string' ? JSON.parse(options) : options;
-        for (const prop in parsedOptions) {
-          if (prop === 'headers') {
-            const headers = parsedOptions['headers'];
-            for (const header in headers) {
-              xhr.setRequestHeader(header, headers[header]);
-            }
-          }
-          else {
-            xhr[prop] = parsedOptions[prop];
-          }
-        }
+        setOptions(options, xhr);
       }
       xhr.send(json ? data : fd);
     });
@@ -120,7 +134,7 @@ const url = (formio) => {
         return uploadRequest();
       }
     },
-    deleteFile(fileInfo) {
+    deleteFile(fileInfo, options) {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('DELETE', fileInfo.url, true);
@@ -132,6 +146,9 @@ const url = (formio) => {
             reject(xhr.response || 'Unable to delete file');
           }
         };
+        if (options) {
+          setOptions(options, xhr);
+        }
         xhr.send(null);
       });
     },
@@ -148,7 +165,7 @@ const url = (formio) => {
       return Promise.resolve(file);
     }
   };
-};
+}
 
 url.title = 'Url';
 export default url;

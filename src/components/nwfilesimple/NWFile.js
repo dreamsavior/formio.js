@@ -1,6 +1,6 @@
-import TextFieldComponent from '../textfield/TextField';
+//import TextFieldComponent from '../textfield/TextField';
 import Input from '../_classes/input/Input';
-import Component from '../_classes/component/Component';
+//import Component from '../_classes/component/Component';
 
 import _ from 'lodash';
 

@@ -25,7 +25,7 @@
       </label>
       <div class="address-autocomplete-container">
         <input ref="searchInput" name="data[address]" type="text" class="form-control" lang="en" tabindex="0" value="" autocomplete="off" aria-label="autocomplete">
-        <i class="address-autocomplete-remove-value-icon fa fa-times" tabindex="0" ref="removeValueIcon"></i>
+        <i class="address-autocomplete-remove-value-icon fa fa-times bi bi-x" tabindex="0" ref="removeValueIcon"></i>
       </div>
       <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
     </div>
@@ -129,38 +129,6 @@
       </div>
       <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
     </div>
-    <div id="resource" class="mb-2 formio-form-group has-feedback formio-component formio-component-resource formio-component-resource " ref="component">
-      <label ref="label" class="col-form-label " for="resource-resource" id="l-resource-resource">
-        Resource
-      </label>
-      <select ref="selectContainer" name="data[resource]" type="text" class="form-control" lang="en" id="resource-resource" aria-required="false"></select>
-      <input type="text" class="formio-select-autocomplete-input" ref="autocompleteInput" tabindex="-1" aria-label="autocomplete" />
-      <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
-    </div>
-    <div id="resourceAdd" class="mb-2 formio-form-group has-feedback formio-component formio-component-resource formio-component-resourceAdd formio-component-multiple " ref="component">
-      <label ref="label" class="col-form-label " for="resourceAdd-resourceAdd" id="l-resourceAdd-resourceAdd">
-        Resource Add
-      </label>
-      <table class="table table-bordered">
-        <tbody>
-          <tr>
-            <td>
-              <select ref="selectContainer" multiple name="data[resourceAdd]" type="text" class="form-control" lang="en" id="resourceAdd-resourceAdd" aria-required="false"></select>
-              <input type="text" class="formio-select-autocomplete-input" ref="autocompleteInput" tabindex="-1" aria-label="autocomplete" />
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <button class="btn btn-primary formio-button-add-resource" ref="addResource">
-                <i class="fa fa-plus bi bi-plus-lg"></i>
-                Add A Resource
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
-    </div>
     <div id="signature" class="mb-2 formio-form-group has-feedback formio-component formio-component-signature formio-component-signature  required formio-component-label-hidden signature-pad" ref="component">
       <label class=" field-required control-label--hidden"></label>
       <div ref="element">
@@ -212,10 +180,10 @@
               A
             </td>
             <td style="text-align: center;">
-              <input type="radio" name="data[survey][a]" value="1" id="survey-a-1" ref="input">
+              <input type="radio" name="data[survey][a][survey]" value="1" id="survey-a-1" ref="input">
             </td>
             <td style="text-align: center;">
-              <input type="radio" name="data[survey][a]" value="2" id="survey-a-2" ref="input">
+              <input type="radio" name="data[survey][a][survey]" value="2" id="survey-a-2" ref="input">
             </td>
           </tr>
           <tr>
@@ -223,10 +191,10 @@
               B
             </td>
             <td style="text-align: center;">
-              <input type="radio" name="data[survey][b]" value="1" id="survey-b-1" ref="input">
+              <input type="radio" name="data[survey][b][survey]" value="1" id="survey-b-1" ref="input">
             </td>
             <td style="text-align: center;">
-              <input type="radio" name="data[survey][b]" value="2" id="survey-b-2" ref="input">
+              <input type="radio" name="data[survey][b][survey]" value="2" id="survey-b-2" ref="input">
             </td>
           </tr>
         </tbody>

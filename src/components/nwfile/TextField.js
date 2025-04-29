@@ -93,10 +93,9 @@ export default class NWFileComponent extends Input {
 
   /**
    * Returns the mask value object.
-   *
    * @param value
    * @param flags
-   * @return {*}
+   * @returns {*}
    */
   maskValue(value, flags = {}) {
     // Convert it into the correct format.
@@ -118,10 +117,9 @@ export default class NWFileComponent extends Input {
 
   /**
    * Normalize the value set in the data object.
-   *
    * @param value
    * @param flags
-   * @return {*}
+   * @returns {*}
    */
   normalizeValue(value, flags = {}) {
     if (!this.isMultipleMasksField) {
@@ -135,7 +133,6 @@ export default class NWFileComponent extends Input {
 
   /**
    * Sets the value at this index.
-   *
    * @param index
    * @param value
    * @param flags
@@ -167,9 +164,8 @@ export default class NWFileComponent extends Input {
 
   /**
    * Returns the value at this index.
-   *
    * @param index
-   * @return {*}
+   * @returns {*}
    */
   getValueAt(index) {
     if (!this.isMultipleMasksField) {

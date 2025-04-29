@@ -142,7 +142,7 @@ export default class SurveyComponent extends Field {
   }
 
   getInputName(question) {
-    return `${this.options.name}[${question.value}]`;
+    return `${this.options.name}[${question.value}][${this.id}]`;
   }
 
   getValueAsString(value, options) {
@@ -151,8 +151,8 @@ export default class SurveyComponent extends Field {
         <table border="1" style="width:100%">
           <thead>
             <tr>
-              <th>Question</th>
-              <th>Value</th>
+              <th>${this.t('surveyQuestion')}</th>
+              <th>${this.t('surveyQuestionValue')}</th>
             </tr>
           </thead>
           <tbody>
@@ -177,6 +177,17 @@ export default class SurveyComponent extends Field {
         result += '</tbody></table>';
 
         return result;
+    }
+
+    if (_.isPlainObject(value)) {
+      const { values = [], questions = [] } = this.component;
+      return _.isEmpty(value)
+        ? ''
+        : _.map(value,(v, q) => {
+          const valueLabel = _.get(_.find(values, val => _.isEqual(val.value, v)), 'label', v);
+          const questionLabel = _.get(_.find(questions, quest => _.isEqual(quest.value, q)), 'label', q);
+          return `${questionLabel}: ${valueLabel}`;
+        }).join('; ');
     }
 
     return super.getValueAsString(value, options);

@@ -1,6 +1,7 @@
 import Field from '../field/Field';
 import { Formio } from '../../../Formio';
 import _ from 'lodash';
+import { getItemTemplateKeys } from '../../../utils/utils';
 
 export default class ListComponent extends Field {
   static schema(...extend) {
@@ -22,6 +23,19 @@ export default class ListComponent extends Field {
   get selectData() {
     const selectData = _.get(this.root, 'submission.metadata.selectData', {});
     return _.get(selectData, this.path);
+  }
+
+  get dataReady() {
+    // If the root submission has been set, and we are still not attached, then assume
+    // that our data is ready.
+    if (
+      (this.root &&
+      this.root.submissionSet &&
+      !this.attached) || !this.visible
+    ) {
+      return Promise.resolve();
+    }
+    return this.itemsLoaded;
   }
 
   get shouldLoad() {
@@ -50,18 +64,10 @@ export default class ListComponent extends Field {
   }
 
   getTemplateKeys() {
-    this.templateKeys = [];
-    if (this.options.readOnly && this.component.template) {
-      const keys = this.component.template.match(/({{\s*(.*?)\s*}})/g);
-      if (keys) {
-        keys.forEach((key) => {
-          const propKey = key.match(/{{\s*item\.(.*?)\s*}}/);
-          if (propKey && propKey.length > 1) {
-            this.templateKeys.push(propKey[1]);
-          }
-        });
-      }
-    }
+    const template = this.component.template;
+    this.templateKeys = this.options.readOnly && template
+      ? getItemTemplateKeys(template)
+      : [];
   }
 
   get requestHeaders() {
@@ -132,6 +138,14 @@ export default class ListComponent extends Field {
     }
   }
 
+  get itemsLoaded() {
+    return this._itemsLoaded || Promise.resolve();
+  }
+
+  set itemsLoaded(promise) {
+    this._itemsLoaded = promise;
+  }
+
   handleLoadingError(err) {
     this.loading = false;
     if (err.networkError) {
@@ -142,13 +156,13 @@ export default class ListComponent extends Field {
       component: this.component,
       message: err.toString(),
     });
-    console.warn(`Unable to load resources for ${this.key}`);
+    console.warn(this.t('loadResourcesError', {componentKey: this.key}));
   }
 
   /* eslint-disable max-statements */
   updateItems(searchInput, forceUpdate) {
     if (!this.component.data) {
-      console.warn(`Select component ${this.key} does not have data configuration.`);
+      console.warn(this.t('noSelectDataConfiguration', {componentKey: this.key}));
       this.itemsLoadedResolve();
       return;
     }
@@ -184,7 +198,7 @@ export default class ListComponent extends Field {
             this.loadItems(resourceUrl, searchInput, this.requestHeaders);
           }
           catch (err) {
-            console.warn(`Unable to load resources for ${this.key}`);
+            console.warn(this.t('loadResourcesError', {componentKey: this.key}));
           }
         }
         else {
@@ -199,6 +213,7 @@ export default class ListComponent extends Field {
           return;
         }
         let { url } = this.component.data;
+        url = _.trim(url);
         let method;
         let body;
         if (url.startsWith('/')) {
@@ -230,7 +245,7 @@ export default class ListComponent extends Field {
         }
 
         if (!window.indexedDB) {
-          window.alert("Your browser doesn't support current version of indexedDB");
+          window.alert(this.t('indexedDBSupportError'));
         }
 
         if (this.component.indexeddb && this.component.indexeddb.database && this.component.indexeddb.table) {
